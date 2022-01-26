@@ -41,8 +41,8 @@ getDependencies() {
   }
 
   exists xh || exists http ||
-  	python3 -m pip install --upgrade httpie &&
-  	export http=http || 
+    python3 -m pip install --upgrade httpie &&
+    export http=http ||
       return $RC_MISSING_DEPS
 
   exists xh &&
