@@ -46,11 +46,11 @@ getDependencies() {
       return $RC_MISSING_DEPS
 
   exists xh &&
-  	export http=xh
+    export http=xh
 
   exists htmlq || {
-  	printf "%s" "$NO_HTMLQ"
-  	return $RC_MISSING_DEPS
+    printf "%s" "$NO_HTMLQ"
+    return $RC_MISSING_DEPS
   }
 }
 
