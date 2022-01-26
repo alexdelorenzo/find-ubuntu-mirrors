@@ -1,17 +1,26 @@
 #!/usr/bin/env bash
-# Copyright 2022 Alex DeLorenzo. Licensed under the GPLv3.
 # Requires: Bash, GNU grep and parallel, htmlq, and httpie or xh.
+# Usage: 
+#        ./find-mirrors.sh ARCH DISTRO REPOSITORY PROTOCOL JOBS
+# Example: 
+#        ./find-mirrors.sh armhf focal main https 6
+#
+# Copyright 2022 Alex DeLorenzo. Licensed under the GPLv3.
+#
 export ARCH="${1:-amd64}"
 export DISTRO="${2:-focal}"
 export REPOSITORY="${3:-main}"
-export PROTO="${4:-http}"
+export PROTOCOL="${4:-http}"
 export JOBS="${5:-4}"
 
 export URL_PATH="dists/$DISTRO/$REPOSITORY/binary-$ARCH/"
 export LIST_URL="https://launchpad.net/ubuntu/+archivemirrors/"
 export SELECTOR="#mirrors_list > tbody > tr > td:nth-child(2) > a"
+export TIMEOUT=10
+
+export RC_MISSING_DEPS=1
 export NO_PARALLEL="GNU parallel is missing, installing with apt...\n"
-export MAX_TIME=10
+export NO_HTMLQ="You need to install htmlq: https://github.com/mgdm/htmlq\n"
 
 
 quiet() {
@@ -20,37 +29,45 @@ quiet() {
 export -f quiet
 
 
+exists() {
+  quiet which $@
+}
+
+
 getDependencies() {
-  quiet which parallel || {
-    printf "$NO_PARALLEL"
+  exists parallel || {
+    printf "%s" "$NO_PARALLEL"
     sudo apt install parallel
   }
 
-  quiet which xh || quiet which http ||
-    python3 -m pip install --upgrade httpie &&
-    export http=http
+  exists xh || exists http ||
+  	python3 -m pip install --upgrade httpie &&
+  	export http=http || 
+      return $RC_MISSING_DEPS
 
-  quiet which htmlq ||
-    printf "You need to install htmlq.\n"
+  exists xh &&
+  	export http=xh
 
-  quiet which xh &&
-    export http=xh
+  exists htmlq || {
+  	printf "%s" "$NO_HTMLQ"
+  	return $RC_MISSING_DEPS
+  }
 }
 
 
 getMirrors() {
   $http --body --follow "$LIST_URL" \
     | htmlq "$SELECTOR" --attribute href \
-    | grep -i "$PROTO:"
+    | grep -i "$PROTOCOL:"
 }
 
 
 checkRepo() {
   local url="$1"
-  
+
   quiet $http "$url" \
     --quiet --quiet \
-    --timeout $MAX_TIME \
+    --timeout $TIMEOUT \
     --verify=no \
     --ignore-stdin \
     --follow \
@@ -62,16 +79,16 @@ export -f checkRepo
 
 testMirror() {
   local url="$1"
-  local fullUrl="$url/$URL_PATH"
+  local repoUrl="$url/$URL_PATH"
 
-  checkRepo "$fullUrl" &&
+  checkRepo "$repoUrl" &&
     printf "Valid: %s\n" "$url"
 }
 export -f testMirror
 
 
 testMirrors() {
-  parallel --will-cite -j "$JOBS" testMirror
+  parallel --will-cite --jobs "$JOBS" testMirror
 }
 
 
