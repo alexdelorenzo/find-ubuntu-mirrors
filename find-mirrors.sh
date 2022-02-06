@@ -24,7 +24,7 @@ export NO_HTMLQ="You need to install htmlq: https://github.com/mgdm/htmlq\n"
 
 
 quiet() {
-  $@ &> /dev/null
+  "$@" &> /dev/null
 }
 export -f quiet
 
