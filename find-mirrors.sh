@@ -22,6 +22,8 @@ export RC_MISSING_DEPS=1
 export NO_PARALLEL="GNU parallel is missing, installing with apt...\n"
 export NO_HTMLQ="You need to install htmlq: https://github.com/mgdm/htmlq\n"
 
+set -u
+
 
 quiet() {
   "$@" &> /dev/null
@@ -52,11 +54,12 @@ getDependencies() {
     printf "%s" "$NO_HTMLQ"
     return $RC_MISSING_DEPS
   }
+
+  echo $http
 }
 
-
 getMirrors() {
-  $http --body --follow "$LIST_URL" \
+  $http --body --follow get "$LIST_URL" \
     | htmlq "$SELECTOR" --attribute href \
     | grep -i "$PROTOCOL:"
 }
@@ -65,7 +68,7 @@ getMirrors() {
 checkRepo() {
   local url="$1"
 
-  quiet $http "$url" \
+  $http get "$url" \
     --quiet --quiet \
     --timeout $TIMEOUT \
     --verify=no \
@@ -93,8 +96,8 @@ testMirrors() {
 
 
 main() {
-  getDependencies &&
-    getMirrors | testMirrors
+  getDependencies || return $RC_MISSING_DEPS
+  getMirrors | testMirrors
 }
 
 
