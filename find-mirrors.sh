@@ -22,7 +22,10 @@ export RC_MISSING_DEPS=1
 export NO_PARALLEL="GNU parallel is missing, installing with apt...\n"
 export NO_HTMLQ="You need to install htmlq: https://github.com/mgdm/htmlq\n"
 
-set -u
+set -eu
+shopt -s expand_aliases
+
+alias installHttp='python3 -m pip install --upgrade httpie'
 
 
 quiet() {
@@ -42,20 +45,17 @@ getDependencies() {
     sudo apt install parallel
   }
 
-  exists xh || exists http ||
-    python3 -m pip install --upgrade httpie &&
-    export http=http ||
-      return $RC_MISSING_DEPS
+  exists xh || exists http || {
+    installHttp || return $RC_MISSING_DEPS
+  }
 
-  exists xh &&
-    export http=xh
+  export http=http
+  exists xh && export http=xh
 
   exists htmlq || {
     printf "%s" "$NO_HTMLQ"
     return $RC_MISSING_DEPS
   }
-
-  echo $http
 }
 
 getMirrors() {
