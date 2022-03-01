@@ -58,6 +58,7 @@ getDependencies() {
   }
 }
 
+
 getMirrors() {
   $http --body --follow get "$LIST_URL" \
     | htmlq "$SELECTOR" --attribute href \
