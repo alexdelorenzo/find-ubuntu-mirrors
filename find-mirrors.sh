@@ -7,11 +7,11 @@
 #
 # Copyright 2022 Alex DeLorenzo. Licensed under the GPLv3.
 #
-export ARCH="${1:-amd64}"
-export DISTRO="${2:-focal}"
-export REPOSITORY="${3:-main}"
-export PROTOCOL="${4:-http}"
-export JOBS="${5:-4}"
+export ARCH="${1:-${ARCH:-amd64}}"
+export DISTRO="${2:-${DISTRO:-focal}}"
+export REPOSITORY="${3:-${REPOSITORY:-main}}"
+export PROTOCOL="${4:-${PROTOCOL:-http}}"
+export JOBS="${5:-${JOBS:-4}}"
 
 export URL_PATH="dists/$DISTRO/$REPOSITORY/binary-$ARCH/"
 export LIST_URL="https://launchpad.net/ubuntu/+archivemirrors/"
@@ -22,12 +22,13 @@ export RC_MISSING_DEPS=1
 export NO_PARALLEL="GNU parallel is missing, installing with apt...\n"
 export NO_HTMLQ="You need to install htmlq: https://github.com/mgdm/htmlq\n"
 
-set -eu
+set -Eeu
 shopt -s expand_aliases
 
-alias installHttp='python3 -m pip install --upgrade httpie'
+
 alias quiet="&>/dev/null"
 alias quiet-err="2>/dev/null"
+alias installHttp='python3 -m pip install --upgrade httpie'
 
 
 exists() {
