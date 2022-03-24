@@ -22,7 +22,7 @@ export RC_MISSING_DEPS=1
 export NO_PARALLEL="GNU parallel is missing, installing with apt...\n"
 export NO_HTMLQ="You need to install htmlq: https://github.com/mgdm/htmlq\n"
 
-set -Eeu
+set -Eeuo pipefail
 shopt -s expand_aliases
 
 
