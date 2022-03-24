@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Requires: Bash, GNU grep and parallel, htmlq, and httpie or xh.
-# Usage: 
+# Usage:
 #        ./find-mirrors.sh ARCH DISTRO REPOSITORY PROTOCOL JOBS
-# Example: 
+# Example:
 #        ./find-mirrors.sh armhf focal main https 6
 #
 # Copyright 2022 Alex DeLorenzo. Licensed under the GPLv3.
@@ -26,12 +26,8 @@ set -eu
 shopt -s expand_aliases
 
 alias installHttp='python3 -m pip install --upgrade httpie'
-
-
-quiet() {
-  "$@" &> /dev/null
-}
-export -f quiet
+alias quiet="&>/dev/null"
+alias quiet-err="2>/dev/null"
 
 
 exists() {
@@ -63,7 +59,7 @@ getMirrors() {
   $http --body --follow get "$LIST_URL" \
     | htmlq "$SELECTOR" --attribute href \
     | grep -i "$PROTOCOL:"
-}
+} quiet-err
 
 
 checkRepo() {
@@ -77,7 +73,7 @@ checkRepo() {
     --follow \
     --headers \
     --check-status
-}
+} quiet-err
 export -f checkRepo
 
 
