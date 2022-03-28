@@ -1,6 +1,8 @@
 # 🔍 Find Apt repository mirrors for Ubuntu
 You can use `find-mirrors.sh` to find alternative repository mirrors for Ubuntu. It will check mirror lists and test the mirrors to see if they're working or not.
 
+When it finds mirrors that are compatible with your preferences, [it will output the mirrors in Apt's `sources.list` format](#output).
+
 The script also allows you to find Ubuntu mirrors for different architectures like:
  - ARM (`armhf` & `arm64`)
  - RISC-V (`riscv64`)
@@ -16,7 +18,6 @@ $ curl -Ls "$URL" | bash
 ### Passing options
 The script takes the following positional arguments or environment variables:
 
-
 | Position | Variable name | Description | Default value |
 | --|------|-------------|-------- |
 | 1 | `$ARCH` | Architecture that the mirrors support | `amd64` |
@@ -31,19 +32,27 @@ Here's the syntax:
 $ curl -Ls "$URL" | bash -s $ARCH $DISTRO $REPOSITORY $PROTOCOL $JOBS
 ```
 
-If you want to find alternatives for `armhf` architectures, you can do this:
+If you want to find alternatives for `arm64` architectures while checking 6 repositories concurrently, you can do this:
 ```bash
-$ curl -Ls "$URL" | bash -s armhf jammy main http 6
-Valid: http://mirror.kumi.systems/ubuntu-ports/
-Valid: http://mirrors.portafixe.com/ubuntu/archive/
-Valid: http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/
-...
+$ curl -Ls "$URL" | bash -s arm64 focal main http 6
 ```
 
 You can also use environment variables instead:
 ```bash
-$ export ARCH=armhf DISTRO=jammy JOBS=6
+$ export ARCH=arm64 DISTRO=focal JOBS=6
 $ curl -Ls "$URL" | bash
+```
+
+### Output
+The script will output the mirrors it finds in Apt's `sources.list` format:
+```bash
+$ curl -Ls "$URL"
+deb http://mirror.kumi.systems/ubuntu-ports/ focal main
+deb-src http://mirror.kumi.systems/ubuntu-ports/ focal main
+
+deb http://mirrors.portafixe.com/ubuntu/archive/ focal main
+deb-src http://mirrors.portafixe.com/ubuntu/archive/ focal main
+...
 ```
 
 ## Requirements
