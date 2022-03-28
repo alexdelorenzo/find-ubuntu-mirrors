@@ -98,6 +98,7 @@ testMirror() {
   local repoUrl="$url/$URL_PATH"
 
   checkRepo "$repoUrl" || return $RC_BAD_MIRROR
+
   toAptSource "$url"
   newline
 }
