@@ -11,7 +11,7 @@ The script also allows you to find Ubuntu mirrors for different architectures li
 
 ## Usage
 ```bash
-$ export URL="https://gist.github.com/alexdelorenzo/8cdb21718c2d2d3f5f8beaad0bf6c843/raw"
+$ export URL="https://raw.githubusercontent.com/alexdelorenzo/find-ubuntu-mirrors/master/find-mirrors.sh"
 $ curl -Ls "$URL" | bash
 ```
 
