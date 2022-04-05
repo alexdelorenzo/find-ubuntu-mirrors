@@ -37,7 +37,7 @@ alias installHttp='python3 -m pip install --upgrade httpie'
 
 
 exists() {
-  quiet which $@
+  quiet type "$@"
 }
 
 
