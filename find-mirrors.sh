@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 # Requires: Bash, GNU grep and parallel, htmlq, and httpie or xh.
-# Usage:
-#        ./find-mirrors.sh ARCH DISTRO REPOSITORY PROTOCOL JOBS
-# Example:
-#        ./find-mirrors.sh armhf focal main https 6
-#
 # Copyright 2022 Alex DeLorenzo. Licensed under the GPLv3.
-#
+
 export ARCH="${1:-${ARCH:-amd64}}"
 export DISTRO="${2:-${DISTRO:-focal}}"
 export REPOSITORY="${3:-${REPOSITORY:-main}}"
